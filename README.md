@@ -1,2 +1,0 @@
-# DayDreams
-Imagine and explore.
