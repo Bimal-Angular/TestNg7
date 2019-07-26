@@ -1,0 +1,6 @@
+{
+    "/CardDetails/*": {
+        "target": "http://test-cardservices.danskenet.net",
+        "secure": false
+    }
+}

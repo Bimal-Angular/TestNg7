@@ -1,0 +1,109 @@
+<h3>Template driven Forms</h3>
+<div class="row">
+    <p> angular adds ngFrom directive when it sees a form tag</p>
+    <p>When we asign the ngForm directive to a temlate reference variable, the ngForm directive is exported and assigned to the variable</p>    
+    <p>We can then use all the properties of the directive using the template reference variable e.g. #myForm=ngForm then myForm.form.valid but it does not work with custom validation like for dropdowns with default value</p><br/>
+    <p style="color:red">novalidate is used with the form tag to stop browser validation</p>
+    <p>TO group controls use ngModelGroup e.g. ngModelGroup for address which contains street,city etc.</p>
+    <p style="color:red">angular tracks only those controls which have a ngModel and name property</p>
+    <p style="color:red">when we use property binding with ngModel i.e. [ngModle]="name", it is one way binding or only form component to view controls, and changes in the controls does not refelct in component</p>
+    <p style="color:red">For two way binding we need to use [(ngModel)]</p>
+    <p style="color:red">For validation use template reference variable and assign mgModel to it. then use varibaleName.untoutched/touched/pristine/dirty/invalid/valid</p>
+    <p>for getting the css classNames applied use a template ref variable without any assignment and use variable.className</p>
+    <p>*ngIf=email.errors, the errors object contains all errors for the assinged ngModel e.g. email.errors.required and email.errors.pattern</p>
+    <p style="color:red">for select the validation happens only if the value for the default option is empty i.e. ngMdole.invalid, but if the value is default it does not work and needs custom validation using blur and change event binding</p>
+    <p style="color:red">(blur)="validateTopic(select1) here the ngModel is passed using template ref variable, <u>in the component we can not set .invalid= true as it is readonly</u></p><br/>
+    <p>[class.is-invalid], [class.d-none]</p>
+    <p style="color:red">ngSubmit event is used to handle form submit e.g. form #myForm="ngForm" novalidate (ngSubmit)="onSubmitFunc()"</p>
+
+    <div style="color:yellowgreen">
+    To create an express server :- <br/>
+    create folder e.g. server and in terminal point to it<br/>
+    then in the terminal :- <br/>
+    npm init --yes (this adds packages.json)<br/>
+    to install dependencies <br/>
+    npm install --save expres body-parser cors (here express is the server, body-parser is the middleware to handle form data, cors is the package to make requests accross domain)
+    <p>Next create a server.js file and write below:- </p><br/>
+    const express = require('express')<br/>
+const bodyParser= require('body-parser');<br/>
+const cors = require('cors');<br/>
+
+const port = 3000;<br/>
+const app = express();<br/>
+app.use(bodyParser.json());<br/>
+app.use(cors());<br/>
+
+app.get('/', function(req, res)(br/>
+res.send('Hello from server'); <br/>   
+))
+
+app.listen(port, function()(<br/>
+console.log('server listening on port :-'+ port);<br/>
+))<br/>
+next in terminal to start the server : node server
+    </div>
+    <br/>
+<form #myForm="ngForm" novalidate (ngSubmit)="onSubmitFunc(myForm)">
+    form is valid - {{myForm.form.valid}}<br/>
+   values :-  {{myForm.value | json}}
+   <hr/>
+{{userModel | json}}
+   <!--<div ngModelGroup="Bio">-->
+    <div class="formg-group">
+            <label>Name</label>
+            <input class="form-control" type="text" #t #name1="ngModel" required [class.is-invalid]="name1.invalid && name1.touched" [(ngModel)] = "userModel.name" name="name" />
+            <br/><label class="text-danger" [class.d-none]="name1.untouched || name1.valid" >Name is required</label><br/>
+            <label class="text-danger" *ngIf="name1.touched && name1.invalid">Name can not be empty</label>
+        {{t.className}} -- untouched -- {{name1.untouched}}
+        </div>
+        <div class="formg-group">
+            <label>Email</label>
+            <input class="form-control" type="text" #email="ngModel" required [class.is-invalid]="email.invalid && email.touched" pattern="^[a-z]|[0-9]"  [(ngModel)] = "userModel.email" name="email"/>
+            <br/>
+            <div *ngIf="email.errors && (email.invalid || email.touched)">
+                <small class="text-danger" *ngIf="email.errors.required">Email is required</small>
+                <small class="text-danger" *ngIf="email.errors.pattern">Special characters not allowed for email</small>
+            </div>
+        </div>
+    <!--</div>-->
+    <div class="formg-group">
+        <select (blur)="validateTopic(select1)" required #select1="ngModel" #s (change)="validateTopic(select1)" [class.is-invalid] ="topicHasError || (select1.invalid && select1.touched)" [(ngModel)] = "userModel.topic" class="custom-select" name="topic">
+            <option selected value=""></option>
+            <option selected value="default">Select Topic</option>
+            <option *ngFor="let t of topics" value={{t}}>{{t}}</option>
+        </select> 
+        <small class="text-danger" [class.d-none]="!select1.errors?.required || select1.untouched">Topic is required</small> <br/>
+        <small class="text-danger" [class.d-none]="!topicHasError || select1.untouched">select a valid topic other than the default</small>
+        <br/> {{s.className}} - topicHasError - {{topicHasError}}
+    </div>
+
+    <div class="formg-group">
+        <label>Select time slot</label>
+        <div class="form-check">
+            <input type="radio" class="form-check-input" [(ngModel)] = "userModel.timeslot" name="timeslot" value="morning"/>
+            <label class="form-check-label">Moring</label>
+        </div>
+        <div class="form-check">
+            <input type="radio" class="form-check-input" [(ngModel)] = "userModel.timeslot" name="timeslot" value="evening" />
+            <label class="form-check-label">Evening</label>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label>Subscribe</label>
+       <!--- <div class="form-check">
+            <input type="checkbox" name="subscribe" [(ngModel)] = "userModel.subscribe" class="form-check-input" />
+            <label class="form-check-label">Email</label>
+        </div>-->
+        <div class="form-check">            
+            <label class="form-check-label" *ngFor="let s of subscribes" for="s">
+                <input type="checkbox" name="subscribe" [(ngModel)] = "userModel.subscribe"  class="form-check-input"/>  
+                {{s}} 
+            </label>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="myForm.form.invalid || topicHasError">Submit</button>
+
+
+</form>
+</div>
+

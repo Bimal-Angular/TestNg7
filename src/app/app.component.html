@@ -1,0 +1,67 @@
+
+
+
+<div style="text-align:center">
+  <h1>
+    Welcome to {{ title }}!
+  </h1>
+  <div>normally cusom components should be inside app.component but 
+    //if we want to use the component from through out the app e.g index.html we need to bootstrap it
+    </div>
+  <nav class="navbar navbar-default">
+    <ul class="nav nav-tabs">
+    <li class="nav-item active"><a class="nav-link" routerLink="/interpolation" routerLinkActive="active">Interpolation</a></li>
+    <li class="nav-item"><a class="nav-link" routerLink="/directives" routerLinkActive="active">Directives</a></li>
+    <li class="nav-item"><a class="nav-link"  routerLink="/pipes" routerLinkActive="active">Pipes</a></li>
+    <li class="nav-item"><a class="nav-link"  routerLink="/componentInteraction" routerLinkActive="active">Component Interaction</a></li>
+    <li class="nav-item"><a class="nav-link"  routerLink="/services" routerLinkActive="active">Services</a></li>
+    <li class="nav-item"><a class="nav-link"  routerLink="/routes" routerLinkActive="active">Routes</a></li>
+    <li class="nav-item"><a class="nav-link"  routerLink="/twoWayBinding" routerLinkActive="active">TwoWayBinding</a></li>
+    <li class="nav-item dropdown dropright">
+      <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" id="angularFormsUl" href="#">AngularForms</a>
+      <ul style="list-style: none;" class="dropdown-menu" aria-labelledby="angularFormsUl">      
+      <li class="dropdown-item"><a  routerLink="/AngularForms/TemplateDrivenForms" routerLinkActive="active">TemplateDrivenForms</a></li>
+      <li class="dropdown-item"><a  routerLink="/AngularForms/ReactiveForms" routerLinkActive="active">ReactiveForms</a></li>
+    </ul>
+    </li>
+    <li class="nav-item"><a class="nav-link"  routerLink="/xssProtection" routerLinkActive="active">XssProtection</a></li>
+    <li class="nav-item"><a class="nav-link"  routerLink="/stateManagement" routerLinkActive="active">StateManagement</a></li>
+    <li class="nav-item"><a class="nav-link"  routerLink="/rxjs" routerLinkActive="active">Rxjs</a></li>
+    <li class="nav-item"><a class="nav-link"  routerLink="/ionicWithExistingAngular" routerLinkActive="active">ionicWithExistingAngular</a></li>
+    <li class="nav-item"><a class="nav-link"  routerLink="/viewChild" routerLinkActive="active">ViewChild</a></li>
+    <li class="nav-item"><a class="nav-link"  routerLink="/changeDetection" routerLinkActive="active">ChangeDetection</a></li>
+    <li class="nav-item"><a class="nav-link"  routerLink="/lifeCycleHooks" routerLinkActive="active">LifeCycleHooks</a></li>
+    <li class="nav-item"><a class="nav-link"  routerLink="/MatDialog" routerLinkActive="active">ModalDialog</a></li>
+    <!--    <a routerLink="/AngularForms" routerLinkActive="active">AngularForms</a>-->
+</ul>
+  </nav>
+  <div style="width:80%;margin:auto">
+  <router-outlet></router-outlet>
+</div>
+======================================
+<h3>Default Page</h3>
+  <div>
+  <div style="width:47%;float:left">
+  <!--<test-Interpolation></test-Interpolation>
+  <br/>
+  <test-pipes></test-pipes>
+  <info-Routing></info-Routing>-->
+
+  
+  </div>
+  <div style="margin-left:6%;width:47%; float:left">
+    <!--<test-directives ></test-directives>
+    <br/> 
+    <test-services></test-services>-->
+<test-componentInteraction [parentData]="parentProp" [parentDataObj]="parentObj" (childEvent)="messageFromChild=$event" (childEventWithObj)="dataObjFromChild=$event"></test-componentInteraction>
+<p [style.color]="'red'"> message from child - {{messageFromChild}}</p>
+<p [style.color]="'red'"> Object data from Child - {{dataObjFromChild.Name}}, {{dataObjFromChild.Text}}</p>
+<test-twoWayBinding></test-twoWayBinding>
+
+  </div>
+
+  
+
+
+  </div>
+

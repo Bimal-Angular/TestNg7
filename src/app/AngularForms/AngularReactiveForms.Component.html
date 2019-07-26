@@ -1,0 +1,199 @@
+
+<h3>Reactive forms or Model driven Forms(FormGrups and FormControl)</h3>
+<div style="color:red">
+    <p>Code resides in the component</p>
+    <p>No Two way binding, instead we need to react to objects to update the value</p>
+    <p>more suited for complex scenarios e.g. dynamic form fields, custom/dynamic validation(password and retype password)</p>
+    <p>Unit test is easy as the logic is in ts file</p>
+    <p>Import ReaciveFormsModule from @angular/forms in app.module</p>
+    <p>In component import FormGroup,FormControl from @angular/forms and create a formModel by instantiating FormGroup and providing the FormControls e.g myForm = new FormGroup({{'{' }} userName:new FormControl('bimal'){{ '}'}})</p>
+<p>Assing the formModel i.e. the isntance of the formGoup to the formGroup attribute of the form .i.e [formGroup]="myForm"</p>
+<p>Assing the formcontrol instances to the formControlName attribute of the conrols withouth [] i.e. input formControlName="userName"</p>
+<p>the formgroup instance holds the form properties and values e.g. myForm.value</p>
+<p>To group bunch of controls under one group, the root formGroup instance can contain child formGroup e.g. myForm = new FormGroup({{'{'}} UserName = new FormControl('Bimal'), address= new FormGroup(...city, state etc){{'}'}}} )</p>
+<p>assin the formGroupName="address" to a div</p>
+<h4>setValue and patchValue to populate data in the template from the component programatically</h4>
+<p class="bg-dark text-light">Use setvalue i.e.(this.myForm.setValue({{'{'}}userName:'t',.... {{'}'}})) of FormControl or FormGorup class to populate data programatically, we need to pass all the FormControl values i.e. we can not remove address in setvalue</p>
+<p class="bg-dark text-light">Use patchValue i.e. (this.myForm.patchValue({{'{'}}userName:'t'{{'}'}})) of FormControl or FormGorup class to populate only some/selective formControls programatically, i.e. we can remove address in patchValue</p>
+<h4>FormBuilder service to create the formControl with lesser code</h4>
+<p>FormBuilder is a service so it needs to be imported form @angular/forms and injected in teh constructor</p>
+<p class="bg-dark text-light">use  this.myForm2 = this.fb.group({{'{'}} userName:['Bimal'].. the FormControls take a parameter of type array</p>
+
+<h4>Simple validation in reactive forms</h4>
+<p>For validation in reactive forms use import Validators from @angular/forms and use Validators.required</p>
+<p class="bg-dark text-light">with FormControl:- this.myForm = new FormGroup({{'{'}} userName:new FormControl('Bimal', Validators.required),..</p>
+<p class="bg-dark text-light">with FormBuilder service use it in the second argument for the form field in the this.fb.group:- this.myForm2 = this.fb.group({{'{'}} userName:['Bimal', Validators.required]..</p>
+<p>for applying multiple validators make the second parameter to an array of validators</p>
+<p>with FormControl:- this.myForm = new FormGroup({{'{'}} userName:new FormControl('Bimal', [Validators.required,Validators.maxLength(5)]),..</p>
+<p>with FormBuilder service:- this.fb.group:- this.myForm2 = this.fb.group({{'{'}} userName:['Bimal', [Validators.required,Validators.maxLength(5)]]..</p>
+<p>In reactive forms in the html instead of temp ref variable(assigned ngModel), use formgroup instance.get e.g. myForm.get('userName').invalid</p>
+<p class="bg-dark text-light">input [class.is-invalid]=myForm.get('userName').invalid && myForm.get('userName').touched</p>
+<p>For getting all validation errors use myForm.get('userName').errors.maxlength/required etc</p>
+<p>For easier and simpler code create a getter to get the userName formControl like get UserName(){{'{'}} return myForm.get('userName') {{'}'}}</p>
+
+<h4>Custom validator in reactive forms using function in component</h4>
+<p>Import AbstractControl form @angular/forms</p>
+<p>For crateing a custom validation create a function which takes the control as paramater as an instance of AbstractControl</p>
+<p>For validate that the username should not have admin :- let res= /admin/.test(AbstractControl.value) </p>
+<p>return res? {{'{'}} 'key': {{'{'}} value:AbstractControl.value{{'}'}}{{'}'}}:null </p>
+<p class="bg-dark text-light">import AbstractControl from "@angular/forms";
+        export function forbiddenUserNameValidator(control :AbstractControl){{'{'}} <small style="color:green">// : {{'{'}}[key:string] : any{{'}'}} | null{{'{'}}</small><br/>
+        let forbidden = /admin/.test(control.value);<br/>
+        return forbidden?{{'{'}} 'forbiddenName': {{ '{' }} value:control.value {{'}'}} {{'}'}} : null;
+   {{'}'}} 
+</p>
+<p>Add the function name to the array of validators of the formControl in component</p>
+<p>use the key name returned by the function e.g. forbiddenName in the form.get('control').errors object</p>
+<p>to show error message :- class="text-danger" *ngIf="myForm.get('userName').errors.forbiddenName">{{'{'}} {{'{'}}myForm.get('userName').errors.forbiddenName.value{{'}'}} {{'}'}} username is not valid</p>
+<p>create a factory function to use the custom validation function with muliiple controls which takes the restricted string as parameter and return a validation funciton</p>
+<p class="bg-dark text-light">export function forbiddenValueValidator(forbiddenString: RegExp) :ValidatorFn -- import from angular/forms
+        {{'{'}}'
+            return (control:AbstractControl)=>
+            {{'{'}}'
+               let res = forbiddenString.test(control.value);
+                return res?{{'{'}}''forbiddenValue': {{'{'}}'value:control.value{{'}'}}{{'}'}}: null;
+            {{'}'}}
+        
+            {{'}'}}</p>
+
+<h4>Cross field validator like password and confirmpassword</h4>
+<p>its a validation funciton but it takes the entire formgroup as parameter of type AbstractControl, as we need to get the values of multiple controls</p>
+<p>hence it is added as the second paramater to the FormGroup in the component i.e. <br/>
+    myForm = new FormGroup({{'{'}}username:.....{{'}'}},passwordconfirmPwdvalidator) or 
+    <br/>myForm2 = this.formbuilder.group({{'{'}}userName:[]...., {{'{'}} validator:passwordconfirmPwdvalidator {{'}'}} {{'}'}})
+</p>
+<p>In template use myForm.errors.mistmach</p>
+
+<h4>Conditional validation</h4>
+<p>Each formControl provides an Observable called valueChanges, to get the change event subscribe it in the ngOnInIt.</p>
+<p>use SetValidators, ClearValidators, and finally updateValueAndValidity methods to dynamically set the validation></p>
+<p>this.myForm2.get('subscribe').valueChanges
+        .subscribe(value=>{{'{'}}'
+            let email1 = this.myForm2.get('email');
+            
+            if (value)                        
+                email1.setValidators(Validators.required)            
+            else
+                email1.clearValidators();
+            
+            email1.updateValueAndValidity()
+        {{'}'}})</p>
+<h4>Dynamic Form Control creation</h4>
+
+</div>
+<div class="row">
+    <div class="col">
+            values :- {{myForm.value | json}} <br/>
+    <form [formGroup]="myForm">
+        <div class="form-group">
+            <label>UserName</label>
+            <input [class.is-invalid]="myForm.get('userName').invalid" formControlName="userName" type="text" class="form-control"/>
+            <br/><small class="text-danger" [class.d-none]="myForm.get('userName').valid">UserName is required and min 3 characters</small>
+            <div class="text-danger" *ngIf="myForm.get('userName').errors">
+                    <small class="text-danger" *ngIf="myForm.get('userName').errors.required">UserName must not be empty</small>
+                    <br/><small class="text-danger" *ngIf="myForm.get('userName').errors.minlength">min lenght is 3</small>
+                    <br/><small class="text-danger" *ngIf="myForm.get('userName').errors.forbiddenName">{{myForm.get('userName').errors.forbiddenName.value}} username is not valid</small>
+                    <br/><small class="text-danger" *ngIf="myForm.get('userName').errors?.forbiddenValue">{{myForm.get('userName').errors?.forbiddenValue.value}} Invalid value for username</small>
+                    
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="checkbox" class="form-check-input" formControlName="subscribe">
+            <label class="form-check-label">Subscribe</label>
+        </div>
+        <div class="form-group">
+                <label>Email</label>
+                <input [class.is-invalid]="myForm.get('email').invalid" formControlName="email" type="email" class="form-control"/>
+                <span [class.d-none]="myForm.get('email').valid">Email is required for scbscription</span>                
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input formControlName="password" type="password" class="form-control"/>
+            <br/><small class="text-danger" *ngIf="myForm.get('password').errors?.forbiddenValue">{{myForm.get('password').errors?.forbiddenValue.value}} Invalid value for password</small>
+        </div>
+        <div class="form-group">
+            <label>confirm Password</label>
+            <input type="password" [class.is-invalid]="myForm.errors?.mismatch" formControlName="confirmPassword" class="form-control"/>
+            <br/><small *ngIf="myForm.errors?.mismatch">Password and confirmpassword does not match</small>
+        </div>
+        
+        formGroup - for address
+        <div formGroupName="address">
+            <div class="form-group">
+                <label>City</label>
+                <input formControlName="city" type="text" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label>state</label>
+                <input formControlName="state" type="text" class="form-control"/>
+            </div>
+        </div>
+
+        <div formArrayName="alternateEmails" *ngFor="let control of alternateEmailsGetter1?.controls; let i= index">
+            <label>{{"Alternate Email" +i}}</label>
+        <input type="text" class="form-control my-1" [formControlName]="i">
+        </div>
+
+        <button class="btn btn-secondary mr-2" type="reset">reset</button>
+        <button class="btn btn-primary" type="submit">Submit</button>
+        <button class="btn btn-secondary ml-2" (click)="loadApiData()">Load api data</button>
+        <button class="btn btn-secondary ml-2" (click)="loadApiDataForSomeControls()">Load partial api data</button>
+        <button class="btn btn-secondary ml-2" (click)="addAlternateEmail1()">Add AlternateEmail</button>
+    </form>
+    </div>
+    <div class="col">
+        values - {{myForm2.value | json}}
+        <form [formGroup]="myForm2">
+            <div class="form-group">
+                <label>UserName</label>
+                <input [class.is-invalid]="myForm2.get('userName').invalid" formControlName="userName" type="text" class="form-control"/>
+                <br/><small class="text-danger" [class.d-none]="myForm2.get('userName').valid">UserName is required</small>
+                <div class="text-danger" *ngIf="myForm2.get('userName').errors">
+                        <small class="text-danger" *ngIf="myForm2.get('userName').errors?.required">UserName must not be empty</small>
+                        <br/><small class="text-danger" *ngIf="myForm2.get('userName').errors?.minlength">min lenght is 3</small>
+                        <br/><small class="text-danger" *ngIf="myForm2.get('userName').errors?.forbiddenName">{{myForm2.get('userName').errors.forbiddenName.value}} username is not valid</small>
+                        <br/><small class="text-danger" *ngIf="myForm2.get('userName').errors?.forbiddenValue">{{myForm2.get('userName').errors?.forbiddenValue.value}} Invalid value for username</small>
+                        
+                </div>
+            </div>
+            <div class="form-check">
+                    <input type="checkbox" class="form-check-input" formControlName="subscribe">
+                    <label class="form-check-label">Subscribe</label>
+            </div>
+            <div class="form-group">
+                    <label>Email</label>
+                    <input [class.is-invalid]="myForm2.get('email').invalid" formControlName="email" type="email" class="form-control"/>      
+                    <span [class.d-none]="myForm2.get('email').valid">Email is required for scbscription</span>                              
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input formControlName="password" type="password" class="form-control"/>
+                <br/><small class="text-danger" *ngIf="myForm2.get('password').errors?.forbiddenValue">{{myForm2.get('password').errors?.forbiddenValue.value}} Invalid value for password</small>
+            </div>
+            <div class="form-group">
+                <label>confirm Password</label>
+                <input type="password" [class.is-invalid]="myForm2.errors?.mismatch" formControlName="confirmPassword" class="form-control"/>
+            <br/><small *ngIf="myForm2.errors?.mismatch">Password and confirmpassword does not match</small>
+            </div>
+            
+            formGroup - for address
+            <div formGroupName="address">
+                <div class="form-group">
+                    <label>City</label>
+                    <input formControlName="city" type="text" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label>state</label>
+                    <input formControlName="state" type="text" class="form-control"/>
+                </div>
+            </div>
+            <div formArrayName="alternateEmails" *ngFor="let control of alternateEmailsGetter2?.controls; let i= index">
+                    <label>Alternate Email {{i}}</label>
+                <input type="text" class="form-control my-1" [formControlName]="i">
+                </div>
+            <button class="btn btn-secondary mr-2" type="reset">reset</button>
+            <button class="btn btn-primary" type="submit">Submit</button>           
+            <button class="btn btn-secondary ml-2" (click)="addAlternateEmail2()">Add AlternateEmail</button>
+        </form>
+    </div>
+</div>

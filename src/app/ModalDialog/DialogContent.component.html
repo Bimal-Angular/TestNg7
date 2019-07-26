@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>Choose Product</h1>
+
+<div mat-dialog-content>
+    <mat-label>Products</mat-label>
+    <mat-select [(ngModel)]="selectedProduct">
+        <mat-option *ngFor="let p of products" [value]="{'productImage': p.productImage, 'productName': p.productName}">
+            <!-- {{p.productName}} -->
+            <img [src]="p.productImage" style="height: 66px;" /><span>{{p.productName}}</span>
+        </mat-option>
+    </mat-select>
+</div>
+
+<div mat-dialog-actions>
+    <button mat-button (click)="confirmSelection()" color="primary">Ok</button>
+    <button mat-button (click)="dialogRef.close()" color="primary">Cancel</button>
+</div>
